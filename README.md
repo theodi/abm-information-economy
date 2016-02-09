@@ -2,6 +2,8 @@
 
 There's not much here right now, but repo will be used to share code etc for agent-based modelling of the information economy.
 
+Please use the [issues](https://github.com/theodi/abm-information-economy/issues) here for comments, advice and suggestions - they will be most welcome!
+
 ## Useful links
 
 * [Agent-based computational economics](http://www2.econ.iastate.edu/tesfatsi/ace.htm) - lots and lots of background
