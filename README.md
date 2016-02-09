@@ -1,8 +1,12 @@
 # Agent-based modelling of the information economy
 
-There's not much here right now, but repo will be used to share code etc for agent-based modelling of the information economy.
+There's not much here right now, but this repo will be used to share code etc for agent-based modelling of the information economy.
 
 Please use the [issues](https://github.com/theodi/abm-information-economy/issues) here for comments, advice and suggestions - they will be most welcome!
+
+## Background blog posts
+
+* [Initial Thoughts](http://www.jenitennison.com/2016/02/09/abm-information-economy.html)
 
 ## Useful links
 
