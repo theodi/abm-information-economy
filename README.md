@@ -1,12 +1,23 @@
 # Agent-based modelling of the information economy
 
-There's not much here right now, but this repo will be used to share code etc for agent-based modelling of the information economy.
+This repo is being used to share code etc for agent-based modelling of the information economy using [Repast Simphony](http://repast.sourceforge.net/).
 
 Please use the [issues](https://github.com/theodi/abm-information-economy/issues) here for comments, advice and suggestions - they will be most welcome!
+
+## Running the code
+
+1. Go through the [ReLogo Getting Started Guide](http://repast.sourceforge.net/docs/ReLogoGettingStarted.pdf) to get familiar with Repast Simphony
+
+2. Create a new ReLogo project called `InformationEconomy`
+
+3. Copy the contents of the [`repast-src`](https://github.com/theodi/abm-information-economy/tree/master/repast-src) directory from this repository into the `~/workspace/InformationEconomy/src` directory
+
+4. Run the simulation!
 
 ## Background blog posts
 
 * [Initial Thoughts](http://www.jenitennison.com/2016/02/09/abm-information-economy.html)
+* [Building a basic agent-based economic model in Repast](http://www.jenitennison.com/2016/02/09/basic-abm-repast.html)
 
 ## Useful links
 
