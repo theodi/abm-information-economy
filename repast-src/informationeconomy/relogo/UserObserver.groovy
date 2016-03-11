@@ -19,6 +19,8 @@ class UserObserver extends ReLogoObserver{
 			setxy(randomXcor(),randomYcor())
 			foodPerStep = random(29) + 1
 			goldPerStep = random(29) + 1
+			currentFood = foodPerStep
+			currentGold = goldPerStep
 		}
 	}
 	
