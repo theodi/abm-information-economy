@@ -24,5 +24,7 @@ public class UserGlobalsAndPanelFactory extends AbstractReLogoGlobalsAndPanelFac
 	        
 		 */
 
+		addChooserWL("initialProducts", "Initial Products",["random", "one", "perStep"],0)
+		
 	}
 }

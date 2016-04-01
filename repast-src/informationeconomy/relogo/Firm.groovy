@@ -18,6 +18,9 @@ import informationeconomy.ReLogoTurtle;
  */
 class Firm extends ReLogoTurtle {
 
+	def initialFood = 0
+	def initialGold = 0
+	
 	def currentFood = 0
 	def currentGold = 0
 	
@@ -66,14 +69,16 @@ class Firm extends ReLogoTurtle {
 		
 		
 		def action = []
-		if (utilityMakingFood > utilityMakingGold) {
-			if (trade['utility'] > utilityMakingFood) {
+		def randomlyTrue = random(10000) > 5000
+		if (utilityMakingFood > utilityMakingGold || (utilityMakingFood == utilityMakingGold && randomlyTrue)) {
+			randomlyTrue = random(10000) > 5000
+			if (trade['utility'] > utilityMakingFood || (trade['utility'] == utilityMakingFood && randomlyTrue)) {
 				action = makeTrade(trade)
 			} else {
 				currentFood += foodPerStep
 				action = [ type: 'make', good: 'food', amount: foodPerStep, utility: currentUtility() ]
 			}
-		} else if (trade['utility'] > utilityMakingGold) {
+		} else if (trade['utility'] > utilityMakingGold || (trade['utility'] == utilityMakingGold && randomlyTrue)) {
 			action = makeTrade(trade)
 		} else {
 			currentGold += goldPerStep
