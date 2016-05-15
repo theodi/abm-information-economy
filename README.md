@@ -20,6 +20,7 @@ Please use the [issues](https://github.com/theodi/abm-information-economy/issues
 * [Building a basic agent-based economic model in Repast](http://www.jenitennison.com/2016/02/09/basic-abm-repast.html)
 * [Introducing trade to a basic agent-based economic model](http://www.jenitennison.com/2016/03/11/adding-trade.html)
 * [Sensitivity analysis](http://www.jenitennison.com/2016/04/01/abm-sensitivity-analysis.html)
+* [Adding data trading to the model](http://www.jenitennison.com/2016/05/15/abm-adding-data-trading.html)
 
 ## Useful links
 
