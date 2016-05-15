@@ -19,127 +19,218 @@ import informationeconomy.ReLogoTurtle;
 class Firm extends ReLogoTurtle {
 
 	def initialFood = 0
+	def initialData = 0
 	def initialGold = 0
 	
 	def currentFood = 0
+	def currentData = 0
 	def currentGold = 0
 	
 	def actions = []
 	def activity = []
 	
 	def foodPerStep = 0
+	def dataPerStep = 0
 	def goldPerStep = 0
 	
 	def step() {
-		def utilityMakingFood = utility(currentFood + foodPerStep, currentGold)
-		def utilityMakingGold = utility(currentFood, currentGold + goldPerStep)
+		def utilityMakingFood = utility(currentFood + foodPerStep, currentData, currentGold)
+		def utilityMakingData = utility(currentFood, currentData + dataPerStep, currentGold)
+		def utilityMakingGold = utility(currentFood, currentData, currentGold + goldPerStep)
 
 		// work out the mrs for the firm
-		def mrs = mrs()
+		def mrsFood = mrsFood()
+		def mrsData = mrsData()
 
 		// set up a variable to record the best trade found
 		def trade = [
 			firm: null,
 			price: 0,
 			food: currentFood,
+			data: currentData,
 			gold: currentGold,
 			utility: currentUtility()
 		]
 
 		// cycle through each of the firms to see whether a trade is worthwhile
-		def thisFirm = self()
+		Firm thisFirm = self()
 		firms().each {
-			def result = null
-			if (mrs >= 1 && it.mrs() < 1) {
+			def resultTradingFood = null
+			if (mrsFood >= 1 && it.mrsFood() < 1) {
 				// more GOLD than FOOD, so buy FOOD
-				result = thisFirm.tryBuyingFood(it)
-			} else if (mrs < 1 && it.mrs() >= 1) {
+				resultTradingFood = thisFirm.tryBuyingFood(it)
+			} else if (mrsFood < 1 && it.mrsFood() >= 1) {
 				// more FOOD than GOLD, so sell FOOD
-				result = thisFirm.trySellingFood(it)
+				resultTradingFood = thisFirm.trySellingFood(it)
 			} else {
-				result = trade
+				resultTradingFood = trade
 			}
+			def resultTradingData = null
+			if (mrsData >= 1 && it.mrsData() < 1) {
+				// more GOLD than DATA, so buy DATA
+				resultTradingData = thisFirm.tryBuyingData(it)
+			} else if (mrsData < 1 && it.mrsData() >= 1) {
+				// more DATA than GOLD, so sell DATA
+				resultTradingData = thisFirm.trySellingData(it)
+			} else {
+				resultTradingData = trade
+			}
+
 			// set the best trade to the result if it's a better trade than the best found so far
-			if (result['firm'] == null) {
-				trade = result
-			} else if (result['utility'] > trade['utility']) {
-				trade = result
+			if (resultTradingFood['utility'] > trade['utility']) {
+				if (resultTradingData['utility'] > resultTradingFood['utility']) {
+					trade = resultTradingData
+				} else {
+					trade = resultTradingFood
+				}
+			} else if (resultTradingData['utility'] > trade['utility']) {
+				trade = resultTradingData
 			}
 		}
 		
-		
 		def action = []
 		def randomlyTrue = random(10000) > 5000
-		if (utilityMakingFood > utilityMakingGold || (utilityMakingFood == utilityMakingGold && randomlyTrue)) {
-			randomlyTrue = random(10000) > 5000
-			if (trade['utility'] > utilityMakingFood || (trade['utility'] == utilityMakingFood && randomlyTrue)) {
-				action = makeTrade(trade)
-			} else {
-				currentFood += foodPerStep
-				action = [ type: 'make', good: 'food', amount: foodPerStep, utility: currentUtility() ]
-			}
-		} else if (trade['utility'] > utilityMakingGold || (trade['utility'] == utilityMakingGold && randomlyTrue)) {
+		def produce = [
+			type: 'make',
+			good: 'gold',
+			amount: goldPerStep,
+			utility: utilityMakingGold
+		]
+		if (utilityMakingFood > produce['utility'] || (utilityMakingFood == produce['utility'] && randomlyTrue)) {
+			produce = [
+				type: 'make',
+				good: 'food',
+				amount: foodPerStep,
+				utility: utilityMakingFood
+			]
+		}
+		if (utilityMakingData > produce['utility'] || (utilityMakingData == produce['utility'] && randomlyTrue)) {
+			produce = [
+				type: 'make',
+				good: 'data',
+				amount: dataPerStep,
+				utility: utilityMakingData
+			]
+		}
+		
+		if (trade['firm'] != null && (trade['utility'] > produce['utility'] || (trade['utility'] == produce['utility'] && randomlyTrue))) {
 			action = makeTrade(trade)
 		} else {
-			currentGold += goldPerStep
-			action = [ type: 'make', good: 'gold', amount: goldPerStep, utility: currentUtility() ]
+			action = makeProduce(produce)
 		}
 		actions << action
 		activity << action
 	}
 	
-	def utility(food, gold) {
-		food * gold
+	def utility(food, data, gold) {
+		food * data * gold
 	}
 
 	def currentUtility() {
-		utility(currentFood, currentGold)
+		utility(currentFood, currentData, currentGold)
 	}
 	
-	def mrs() {
+	def mrsFood() {
 		currentGold / currentFood
 	}
 	
-	def priceForTrade(firm) {
+	def priceForFoodTrade(Firm firm) {
 		(currentGold + firm.currentGold) / (currentFood + firm.currentFood)
 	}
 	
-	def tryBuyingFood(firm) {
-		def price = priceForTrade(firm)
+	def mrsData() {
+		currentGold / currentData
+	}
+	
+	def priceForDataTrade(Firm firm) {
+		(currentGold + firm.currentGold) / (currentData + firm.currentData)
+	}
+
+	def tryBuyingFood(Firm firm) {
+		def price = priceForFoodTrade(firm)
 		def foodToBuy = Math.floor((firm.currentFood - currentFood) / 2)
 		def result = [
 			firm: firm,
 			price: price,
 			food: currentFood + foodToBuy,
+			data: currentData,
 			gold: currentGold - foodToBuy * price,
 			utility: 0
 		]
-		result.put('utility', utility(result['food'], result['gold']))
+		result.put('utility', utility(result['food'], result['data'], result['gold']))
 		return result
 	}
 	
-	def trySellingFood(firm) {
-		def price = priceForTrade(firm)
+	def trySellingFood(Firm firm) {
+		def price = priceForFoodTrade(firm)
 		def foodToSell = Math.floor((currentFood - firm.currentFood) / 2)
 		def result = [
 			firm: firm,
 			price: price,
 			food: currentFood - foodToSell,
+			data: currentData,
 			gold: currentGold + foodToSell * price,
 			utility: 0
 		]
-		result.put('utility', utility(result['food'], result['gold']))
+		result.put('utility', utility(result['food'], result['data'], result['gold']))
+		return result
+	}
+	
+	def tryBuyingData(Firm firm) {
+		def price = priceForDataTrade(firm)
+		def dataToBuy = Math.floor((firm.currentData - currentData) / 2)
+		def result = [
+			firm: firm,
+			price: price,
+			food: currentFood,
+			data: currentData + dataToBuy,
+			gold: currentGold - dataToBuy * price,
+			utility: 0
+		]
+		result.put('utility', utility(result['food'], result['data'], result['gold']))
+		return result
+	}
+	
+	def trySellingData(Firm firm) {
+		def price = priceForDataTrade(firm)
+		def dataToSell = Math.floor((currentData - firm.currentData) / 2)
+		def result = [
+			firm: firm,
+			price: price,
+			food: currentFood,
+			data: currentData, // comment this line out for a COAL-FOOD-GOLD model and in for a DATA-FOOD-GOLD model
+			// data: currentData - dataToSell, // comment this line in for a COAL-FOOD-GOLD model and out for a DATA-FOOD-GOLD model
+			gold: currentGold + dataToSell * price,
+			utility: 0
+		]
+		result.put('utility', utility(result['food'], result['data'], result['gold']))
+		result.put('data', currentData - dataToSell) // comment this line out for a COAL-FOOD-GOLD model and in for a DATA-FOOD-GOLD model
 		return result
 	}
 
 	def makeTrade(trade) {
-		def action = [ type: 'trade', food: trade['food'] - currentFood, gold: trade['gold'] - currentGold, price: trade['price'], utility: trade['utility'] ]
-		trade['firm'].currentFood += currentFood - trade['food']
-		trade['firm'].currentGold += currentGold - trade['gold']
-		trade['firm'].activity << [ type: 'receive-trade', food: currentFood - trade['food'], gold: currentGold - trade['gold'], price: trade['price'], utility: trade['firm'].currentUtility() ]
+		def action = [ type: 'trade', food: trade['food'] - currentFood, data: trade['data'] - currentData, gold: trade['gold'] - currentGold, price: trade['price'], utility: trade['utility'] ]
+		Firm firm = trade['firm']
+		firm.currentFood += currentFood - trade['food']
+		firm.currentData += currentData > trade['data'] ? currentData - trade['data'] : 0 // comment this line out for a COAL-FOOD-GOLD model and in for a DATA-FOOD-GOLD model
+		// firm.currentData += currentData - trade['data'] // comment this line in for a COAL-FOOD-GOLD model and out for a DATA-FOOD-GOLD model
+		firm.currentGold += currentGold - trade['gold']
+		firm.activity << [ type: 'receive-trade', food: currentFood - trade['food'], data: currentData - trade['data'], gold: currentGold - trade['gold'], price: trade['price'], utility: firm.currentUtility() ]
 		currentFood = trade['food']
+		currentData = trade['data'] > currentData ? trade['data'] : currentData
 		currentGold = trade['gold']
 		return action
+	}
+	
+	def makeProduce(produce) {
+		if (produce['good'] == 'food') {
+			currentFood += produce['amount']
+		} else if (produce['good'] == 'data') {
+			currentData += produce['amount']
+		} else {
+			currentGold += produce['amount']
+		}
+		return produce
 	}
 	
 }

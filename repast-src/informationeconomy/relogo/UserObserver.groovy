@@ -18,19 +18,24 @@ class UserObserver extends ReLogoObserver{
 		createFirms(500){
 			setxy(randomXcor(),randomYcor())
 			foodPerStep = random(29) + 1
+			dataPerStep = random(29) + 1
 			goldPerStep = random(29) + 1
 			initialProducts = "random"
 			if (initialProducts == "random") {
 				initialFood = random(29) + 1
+				initialData = random(29) + 1
 				initialGold = random(29) + 1
 			} else if (initialProducts == "perStep") {
 				initialFood = foodPerStep
+				initialData = dataPerStep
 				initialGold = goldPerStep
 			} else {
 				initialFood = 1
+				initialData = 1
 				initialGold = 1
 			}
 			currentFood = initialFood
+			currentData = initialData
 			currentGold = initialGold
 		}
 	}
